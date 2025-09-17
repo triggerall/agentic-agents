@@ -1,0 +1,196 @@
+{
+  "name": "Shopify Order Alerts via Gmail & Slack",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "accessToken",
+        "topic": "orders/create"
+      },
+      "id": "b8056dff-0d82-4463-9eeb-d8b845977310",
+      "name": "Shopify Trigger (New Order)",
+      "type": "n8n-nodes-base.shopifyTrigger",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -48
+      ],
+      "webhookId": "eec474c5-9dfd-465a-9543-cf0dfde6296c",
+      "credentials": {
+        "shopifyAccessTokenApi": {
+          "id": "jjO9WdmUcrsko5W5",
+          "name": "Shopify Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "channel": "sales-alerts",
+        "text": "={{$json[\"message\"]}}",
+        "otherOptions": {},
+        "attachments": []
+      },
+      "id": "bb25fab4-11fa-4ae8-b6a8-6561928bc3d2",
+      "name": "Send Slack Alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [
+        240,
+        128
+      ],
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "ntTzsGmt8PVJZSJL",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const order = items[0].json;\nconst products = order.line_items.map(\n  item => `• ${item.quantity} x ${item.title}`\n).join(\"\\n\");\n\nconst msg = `\n🛒 *New order alert!*\n\nOrder ID: ${order.id}\nName: ${order.customer.first_name} ${order.customer.last_name}\nProducts:\n${products}\n\nTotal: ₹${order.total_price}\nShipping: ${order.shipping_address?.address1}, ${order.shipping_address?.city}\n`;\n\nreturn [{ json: { message: msg, chat_id: order.customer.note || \"\" } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        -48
+      ],
+      "id": "cbc2ee29-48b6-432e-bc4c-05c15a12c4f2",
+      "name": "Format Order Details"
+    },
+    {
+      "parameters": {
+        "sendTo": "krishna@triggerall.com",
+        "subject": "New order - futurefive",
+        "emailType": "text",
+        "message": "={{ $json.message }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        -144
+      ],
+      "id": "2d8cda09-e4d8-4fb6-8b46-56e0df3e6909",
+      "name": "Send a message",
+      "webhookId": "8efbcd6e-ea05-47ff-a229-67f0bff53917",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bkdHqAeZVazFcy8X",
+          "name": "Gmail account KOW"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Setup shopify new order trigger",
+        "height": 80,
+        "width": 192,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -400,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "6ced6344-a9a8-4a50-b087-4fa4eefa975b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Clean order data and tranform in to a message",
+        "height": 96,
+        "width": 192,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "2c034d93-74b6-4f6c-a8ae-07745e3d08a1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Trigger order alert as email or slack message or both",
+        "height": 96,
+        "width": 192,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        400,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "478e2040-da2a-4fd3-a184-6d0710ac525c",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Shopify Trigger (New Order)": {
+      "main": [
+        [
+          {
+            "node": "Format Order Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Order Details": {
+      "main": [
+        [
+          {
+            "node": "Send Slack Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ee988964-f16e-43b9-88a8-33b25b46449e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "af9fe5bb0163dc4cbb85dd6fb4c45fe63eac1327996aeecd696d8f7aed2d776b"
+  },
+  "id": "ROOMP7eqRgygkY4Q",
+  "tags": [
+    {
+      "createdAt": "2025-08-26T08:32:34.517Z",
+      "updatedAt": "2025-09-17T16:41:35.428Z",
+      "id": "xxjuqqdXnctj4nAp",
+      "name": "Shopify"
+    },
+    {
+      "name": "order alert",
+      "id": "Z88OHkYyjrmJQWXF",
+      "createdAt": "2025-09-17T16:41:52.151Z",
+      "updatedAt": "2025-09-17T16:41:52.151Z"
+    },
+    {
+      "name": "telegram",
+      "id": "CxPLakIIfi32OT3L",
+      "createdAt": "2025-09-17T16:41:57.182Z",
+      "updatedAt": "2025-09-17T16:41:57.182Z"
+    }
+  ]
+}
