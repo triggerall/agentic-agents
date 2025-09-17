@@ -1,2 +1,2 @@
 # agentic-agents
-All automation template &amp; the open source AI Agents hosted on the triggerAll Live Agent Studio platform!
+All free AI &amp; Automation template and resournces built by the triggerAll!
